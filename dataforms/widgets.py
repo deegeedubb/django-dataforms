@@ -48,21 +48,24 @@ class AjaxSingleFileWidget(forms.TextInput):
 		# break up name to be DB readable
 		field_name = _field_for_db(name)
 		# query all answertexts for this field & submission
-		answers = AnswerText.objects.filter(answer__field__slug=field_name, answer__answertext__text=value)
+		answers = AnswerText.objects.filter(answer__field__slug=field_name, answer__answertext__text=value).distinct()
 		
 		files = ''
+		answer_ids = []
 		if answers:
 			for answer in answers:
+				answer_ids.append(answer.id)
 				value = answer.text
 				full_path = ''.join([settings.MEDIA_URL, value])
 				files += """<li>
-							<a class="del_upload" id="%s" href="" style="color:red;">X</a>
+							<a class="del_upload" id="%s" name="%s" href="" style="color:red;">X</a>
 							<a href="%s" target="_blank">%s</a>
-							</li>""" % (value, full_path, value.split("/")[-1])
+							</li>""" % (answer.id, value, full_path, value.split("/")[-1])
 			
 		vals = {
 			'name' : name,
-			'files' : files
+			'files' : files,
+			'answer_ids' : answer_ids
 		}
 		
 		output.append("""
@@ -123,22 +126,28 @@ class AjaxSingleFileWidget(forms.TextInput):
 							
 							// Save the collection on each upload for history & to make multiple uploads work
 							saveCollection();
+							
+							// Remove the input value to avoid submitting duplicate answer_text when submitting on change sections
+							button.next(".files").next("input").val(null);
 						}
 					});
 					
 					function del_upload() {
 						// Function to handle confirmation box, calling of delete function, and 
 						// ajax removal of file from list
-						$(".del_upload").click(function(e) {
-							e.preventDefault();
-							var del_file = confirm("You are about to delete a file, are you sure you want to do this?");
-							var del_path = {'path': $(this).attr("id")};
-							if (del_file) {
-								deleteFile(del_path); // Call delete JS function
-								$(this).parent().remove(); // Remove file from the list
-							}
+						for (var id in %(answer_ids)s) {
+							var answer_object = $(".files").find("#" + %(answer_ids)s[id]);
+							$(answer_object).click(function(e) {
+								e.preventDefault();
+								var del_file = confirm("You are about to delete a file, are you sure you want to do this?");
+								var del_path = {'path': $(this).attr("name")};
+								if (del_file) {
+									deleteFile(del_path); // Call delete JS function
+									$(this).parent().remove(); // Remove file from the list
+								}
 						
-						});
+							});
+						}
 					}
 				});
 			</script>

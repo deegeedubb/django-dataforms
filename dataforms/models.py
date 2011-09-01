@@ -292,6 +292,6 @@ class Answer(models.Model):
 	field = models.ForeignKey('Field', null=False, blank=False)
 
 	def __unicode__(self):
-		return unicode(self.field)
+		return unicode(" - ".join([unicode(self.id), unicode(self.field)]))
 
 	objects = AnswerManager()
