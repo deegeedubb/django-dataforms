@@ -110,25 +110,41 @@ class AjaxSingleFileWidget(forms.TextInput):
 							
 							window.clearInterval(interval);
 							
-							// Enable upload button
-							this.enable();
-							
-							var link = response.split("/");
-							link = '<a class="del_upload" id="'+response.slice(8)+'" href="" style="color:red;">X</a>\
-							<a href="'+response+'" target="_blank">'+link[link.length-1]+'</a>';
-							
-							// add file to the list
-							button.next(".files").prepend($('<li></li>').html(link));
-							del_upload();
-							
 							// Add the path to the hidden variable input in order to save
 							button.next(".files").next("input").val(response);
 							
 							// Save the collection on each upload for history & to make multiple uploads work
 							saveCollection();
 							
-							// Remove the input value to avoid submitting duplicate answer_text when submitting on change sections
-							button.next(".files").next("input").val(null);
+							// Enable upload button
+							this.enable();
+							
+							var link = response.split("/");
+							var upload_path = {'path': response.slice(8)}
+							var request = getFileUploadAnswerTextID(upload_path);
+							
+							request.done(function(data) {
+								var upload_id = data;
+								
+								link = '<a class="del_upload" id="'+upload_id+'" name="'+response.slice(8)+'" href="" style="color:red;">X</a>\
+								<a href="'+response+'" target="_blank">'+link[link.length-1]+'</a>';
+								
+								// add file to the list
+								button.next(".files").prepend($('<li></li>').html(link));
+								
+								$("#" + data).click(function(e) {
+									e.preventDefault();
+									var del_file = confirm("You are about to delete a file, are you sure you want to do this?");
+									var del_path = {'path': $(this).attr("name")};
+									if (del_file) {
+										deleteFile(del_path); // Call delete JS function
+										$(this).parent().remove(); // Remove file from the list
+									}
+								});
+								
+								// Remove the input value to avoid submitting duplicate answer_text for submissions on section changes
+								button.next(".files").next("input").val(null);
+							})
 						}
 					});
 					
