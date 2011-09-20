@@ -1,3 +1,4 @@
+import urllib
 from django.conf import settings
 from django import forms
 from django.utils.safestring import mark_safe
@@ -60,7 +61,7 @@ class AjaxSingleFileWidget(forms.TextInput):
 				files += """<li>
 							<a class="del_upload" id="%s" name="%s" href="" style="color:red;">X</a>
 							<a href="%s" target="_blank">%s</a>
-							</li>""" % (answer.id, value, full_path, value.split("/")[-1])
+							</li>""" % (answer.id, value, urllib.quote(full_path), value.split("/")[-1])
 			
 		vals = {
 			'name' : name,
