@@ -24,7 +24,7 @@ from django.core.cache import cache
 from .utils import cache_set_with_tags
 
 from .settings import (FIELD_MAPPINGS, SINGLE_CHOICE_FIELDS,
-	MULTI_CHOICE_FIELDS, CHOICE_FIELDS, UPLOAD_FIELDS,
+	MULTI_CHOICE_FIELDS, CHOICE_FIELDS, UPLOAD_FIELDS, BOOLEAN_FIELDS,
 	FIELD_DELIMITER, SINGLE_NUMBER_FIELDS, MULTI_NUMBER_FIELDS,
 	NUMBER_FIELDS, HIDDEN_BINDINGS_SLUG)
 from .models import (DataForm, Collection, Field, FieldChoice,
@@ -109,6 +109,27 @@ class BaseDataForm(forms.BaseForm):
 			# We already have a submission object, so let's update the last_modified field
 			self.submission.last_modified = datetime.datetime.now()
 			self.submission.save()
+		
+		# Need to account for when single checkbox fields become unchecked
+		# 
+		# Kinda evil, but we're getting a list of all fields in the form,
+		# seeing if any of those fields (excluding bindings) didn't come
+		# back, grabbing the corresponding Field object to check for field in 
+		# BOOLEAN_FIELDS, then deleting answer & answertext (cascade delete)
+		# 
+		# Better solution?
+		for key in self.declared_fields.keys():
+			if key not in self.fields.keys() and 'bindings' not in key:
+				field = Field.objects.get(slug=_field_for_db(key))
+				if field.field_type in BOOLEAN_FIELDS:
+					try:
+						answer = Answer.objects.get(
+							submission=self.submission,
+							field=field,
+							data_form=DataForm.objects.get(slug=self.slug),
+						).delete()
+					except Exception:
+						pass
 		
 		for key in self.fields.keys():
 			# Mangle the key into the DB form, then get the right Field
