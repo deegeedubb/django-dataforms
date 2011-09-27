@@ -115,19 +115,19 @@ class AnswerAdmin(admin.ModelAdmin):
 	list_display = ('id', 'submission', 'data_form', 'field', )
 	inlines = [AnswerTextInline, AnswerNumberInline, AnswerChoiceInline]
 	list_select_related = True
-	search_fields = ('field__slug', 'field__label')
+	search_fields = ('field__slug', 'field__label', 'submission', 'id')
 
 class AnswerChoiceAdmin(BaseAdminClass):
 	list_display = ('id', 'answer', 'choice')
-	search_fields = ('answer__field__slug', 'answer__field__label')
+	search_fields = ('answer__field__slug', 'answer__field__label', 'answer__id')
 
 class AnswerTextAdmin(BaseAdminClass):
 	list_display = ('id', 'answer', 'text')
-	search_fields = ('answer__field__slug', 'answer__field__label')
+	search_fields = ('answer__field__slug', 'answer__field__label', 'answer__id')
 
 class AnswerNumberAdmin(BaseAdminClass):
 	list_display = ('id', 'answer', 'num')
-	search_fields = ('answer__field__slug', 'answer__field__label')
+	search_fields = ('answer__field__slug', 'answer__field__label', 'answer__id')
 
 class SubmissionAdmin(BaseAdminClass):
 	list_display = ('id', '__unicode__', 'last_modified',)
@@ -140,8 +140,9 @@ class ChoiceAdmin(admin.ModelAdmin):
 	save_as = True
 
 class SectionAdmin(admin.ModelAdmin):
-	list_display = ('title',)
+	list_display = ('title', 'slug')
 	save_as = True
+	search_fields = ('title', 'slug')
 	
 admin.site.register(Section, SectionAdmin)
 admin.site.register(Collection, CollectionAdmin)
