@@ -121,7 +121,7 @@ class AjaxSingleFileWidget(forms.TextInput):
 							this.enable();
 							
 							var link = response.split("/");
-							var upload_path = {'path': response.slice(8)}
+							var upload_path = {'path': response.slice(8)};
 							var request = getFileUploadAnswerTextID(upload_path);
 							
 							request.done(function(data) {
@@ -152,7 +152,7 @@ class AjaxSingleFileWidget(forms.TextInput):
 					function del_upload() {
 						// Function to handle confirmation box, calling of delete function, and 
 						// ajax removal of file from list
-						for (var id in %(answer_ids)s) {
+						for (var i=0, len=%(answer_ids)s.length; i<len; ++i) {
 							var answer_object = $(".files").find("#" + %(answer_ids)s[id]);
 							$(answer_object).click(function(e) {
 								e.preventDefault();
