@@ -153,7 +153,7 @@ class AjaxSingleFileWidget(forms.TextInput):
 						// Function to handle confirmation box, calling of delete function, and 
 						// ajax removal of file from list
 						for (var i=0, len=%(answer_ids)s.length; i<len; ++i) {
-							var answer_object = $(".files").find("#" + %(answer_ids)s[id]);
+							var answer_object = $(".files").find("#" + %(answer_ids)s[i]);
 							$(answer_object).click(function(e) {
 								e.preventDefault();
 								var del_file = confirm("You are about to delete a file, are you sure you want to do this?");
