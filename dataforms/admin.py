@@ -137,6 +137,7 @@ class SubmissionAdmin(BaseAdminClass):
 class ChoiceAdmin(admin.ModelAdmin):
 	list_display = ('title', 'value',)
 	search_fields = ('title','value')
+	inlines = [ChoiceInline,]
 	save_as = True
 
 class SectionAdmin(admin.ModelAdmin):

@@ -171,7 +171,7 @@ class Choice(models.Model):
 	"""
 
 	title = models.CharField(verbose_name=_('choice title'), max_length=255)
-	value = models.CharField(verbose_name=_('choice value'), max_length=255)
+	value = models.CharField(verbose_name=_('choice value'), max_length=255, unique=True)
 
 	def __unicode__(self):
 		return unicode(self.title)
