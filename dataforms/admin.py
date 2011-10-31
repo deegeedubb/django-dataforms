@@ -116,6 +116,7 @@ class AnswerAdmin(admin.ModelAdmin):
 	inlines = [AnswerTextInline, AnswerNumberInline, AnswerChoiceInline]
 	list_select_related = True
 	search_fields = ('field__slug', 'field__label', 'submission', 'id')
+	save_as = True
 
 class AnswerChoiceAdmin(BaseAdminClass):
 	list_display = ('id', 'answer', 'choice')
