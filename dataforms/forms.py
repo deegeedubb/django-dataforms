@@ -119,7 +119,7 @@ class BaseDataForm(forms.BaseForm):
 		# 
 		# Better solution?
 		for key in self.declared_fields.keys():
-			if key not in self.fields.keys() and 'bindings' not in key:
+			if self.fields.keys() and key not in self.fields.keys() and 'bindings' not in key:
 				field = Field.objects.get(slug=_field_for_db(key))
 				if field.field_type in BOOLEAN_FIELDS:
 					try:
